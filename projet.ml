@@ -72,8 +72,9 @@ parcours graphe1;;
 let parcourir e liparcouru =
 	match liparcouru with
 		[] -> e::liparcouru
-		|ns::reste -> if (ns=e) then liparcouru
-				    else e::liparcouru;;
+		|ns::reste -> e::liparcouru;;
+		
+		
 let rec estparcouru e liparcouru =
 	match liparcouru with
 		[] -> false
