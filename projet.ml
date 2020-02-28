@@ -88,30 +88,33 @@ let rec ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ =
 						       then ajout_succ_de_succ liparcouru graphe elementsucc restesuccdesucc
 						       else ajout_succ_de_succ (parcourir elementsuccdesucc liparcouru) graphe elementsucc (restesuccdesucc) ;;			
 					
-							    
+							
+let rec ajout_de_succ lisucc ns liparcouru graphe = 
+		match lisucc with 
+			[] -> parcourir ns liparcouru
+			|elementsucc::restesucc -> if (estparcouru elementsucc liparcouru)
+						   then ajout_de_succ restesucc ns liparcouru graphe
+				   		   else (let liste_succ_de_succ = liste_succ graphe elementsucc in
+				   			ajout_de_succ restesucc ns (ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ) graphe);;			    
+
+
 				    
+let rec rec_parcours_prof graphe liparcouru = 
+	match graphe with
+		[] -> liparcouru
+		|(ns,li)::reste -> if (estparcouru ns liparcouru)
+				   then rec_parcours_prof reste liparcouru
+				   else 
+					(let lisucc = liste_succ graphe ns in 
+						rec_parcours_prof reste (ajout_de_succ lisucc ns liparcouru graphe));;
+						
+						
+
+let parcours_prof graphe = 
+	let liparcouru = [] in
+		rec_parcours_prof graphe liparcouru;;
 				    
-				    
-				    
-				    
-let rec parcours_prof graphe = 
-	let lisommet = liste_sommet_graphe graphe in
-		let liparcouru = [] in
-			match graphe with
-				[] -> liparcouru
-				|(ns,li)::reste -> if (estparcouru ns liparcouru)
-						   then parcours_prof reste
-						   else 
-							let lisucc = liste_succ graphe ns in 
-			(**function**)				let rec ajout_de_succ lisucc  =	
-									match lisucc with 
-										[] -> parcourir ns liparcouru
-										|elementsucc::restesucc -> if (estparcouru elementsucc liparcouru)
-													   then ajout_de_succ restesucc
-											   		   else let liste_succ_de_succ = liste_succ graphe elementsucc in
-							(**function**)		   				ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ;;
-					
+		
 			
-			
-			
+parcours_prof graphe1;;			
 			
