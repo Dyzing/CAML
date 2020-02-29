@@ -18,6 +18,7 @@ let rec liste_succ graphe elem =
 (*liste_succ graphe1 1;;*)
 
 (**3**)
+(**
 let rec ajoutelem graphe elem = 
 	match graphe,elem with
 	[],_ -> elem::graphe
@@ -33,6 +34,9 @@ let rec inverser graphe =
 	List.fold_left (fun base (s,lisuc) -> 
 		combiner base  (List.fold_left (fun base2 ei -> ajoutelem base2 (ei,[s]) ) [] lisuc)
 	) [] graphe;;
+
+**)
+
 
 
 (*inverser graphe1;;*)
@@ -116,6 +120,53 @@ let parcours_prof graphe =
 		rec_parcours_prof graphe liparcouru;;
 				    
 		
+
+
+
+let inverser graphe = (**fun**)
+	let liste_finale = [] in 
+	let graphe_de_base = graphe in
+	
+		let rec rec_inverser graphe liste_finale  = (**fun**)
+			match graphe with
+				[] -> liste_finale
+				|(ns1,li1)::reste1 -> let liste_succ_de_ns1 = [] in
+				
+				
+						 let rec passer_au_noeud2_suivant graphe liste_succ_de_ns1 = (**fun**)
+								match graphe with
+									[] -> rec_inverser reste1 (liste_finale@((ns1,liste_succ_de_ns1)::[])) 
+									|(ns2,li2)::reste2 ->	if(ns2 = ns1)
+												then passer_au_noeud2_suivant reste2 liste_succ_de_ns1	
+												else let lisucc = liste_succ graphe ns2 in
+												
+												
+													let rec passer_a_element2_suivant lisucc liste_succ_de_ns1  = (**fun**)
+														match lisucc with
+															[] -> passer_au_noeud2_suivant reste2 liste_succ_de_ns1
+															|e2::r2 ->	if (e2 = ns1) 
+																  	then passer_au_noeud2_suivant reste2 (liste_succ_de_ns1@(ns2::[])) 
+																  	else passer_a_element2_suivant r2 liste_succ_de_ns1
+																  	
+																  	 
+												  	in passer_a_element2_suivant lisucc liste_succ_de_ns1 
+						 in passer_au_noeud2_suivant graphe_de_base liste_succ_de_ns1
+		in rec_inverser graphe liste_finale ;;
+		
+		
+		
+
+
+
 			
-parcours_prof graphe1;;			
-			
+parcours_prof graphe1;;	
+
+inverser graphe1;;		
+
+inverser graphe1;;		
+
+
+let rec kosaraju graphe = parcours_prof (inverser graphe1);;
+
+kosaraju graphe1;;
+
