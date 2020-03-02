@@ -34,7 +34,6 @@ let rec inverser graphe =
 	List.fold_left (fun base (s,lisuc) -> 
 		combiner base  (List.fold_left (fun base2 ei -> ajoutelem base2 (ei,[s]) ) [] lisuc)
 	) [] graphe;;
-
 **)
 
 
@@ -48,21 +47,17 @@ let rec appartient li e =
 	match li with
 	[] -> false
 	| x :: r -> if e = x then true else appartient r e;;
-
 let sommet noeud =
 	match noeud with
 	(x,li) -> x;;
-
 let premierNoeud graphe =
 	match graphe with
 	[] -> failwith "pas de premier Noeud"
 	| x::_ -> x;;
-
 let rec getNode graphe sommet =
 	match graphe with
 	[] -> failwith "pas de sommet"
 	| (s,li)::reste -> if s = sommet then (s,li) else getNode reste sommet;;
-
 let parcours graphe = 
 	let rec visite listeDejaVisit (s,li) =
 		if appartient listeDejaVisit s
@@ -70,7 +65,6 @@ let parcours graphe =
 			else List.fold_left (fun base ei -> visite (s::base) (getNode graphe ei)) listeDejaVisit li 
 	in visite [] (getNode graphe 2);;
 parcours graphe1;;
-
 **)
 
 let parcourir e liparcouru =
@@ -86,12 +80,12 @@ let rec estparcouru e liparcouru =
 				    else estparcouru e reste;;				    
 				    
 				    
-let rec ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ =
+let rec ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ liconnexe=
 	match liste_succ_de_succ with
-  		[] -> parcourir elementsucc liparcouru
+  		[] -> parcourir elementsucc liconnexe
 		|elementsuccdesucc::restesuccdesucc -> if(estparcouru elementsuccdesucc liparcouru)
-						       then ajout_succ_de_succ liparcouru graphe elementsucc restesuccdesucc
-						       else ajout_succ_de_succ (parcourir elementsuccdesucc liparcouru) graphe elementsucc (restesuccdesucc) ;;			
+						       then ajout_succ_de_succ liparcouru graphe elementsucc restesuccdesucc liconnexe
+						       else ajout_succ_de_succ (parcourir elementsuccdesucc liconnexe) graphe elementsucc (restesuccdesucc) liconnexe ;;			
 					
 							
 let rec ajout_de_succ lisucc ns liparcouru graphe = 
@@ -100,7 +94,8 @@ let rec ajout_de_succ lisucc ns liparcouru graphe =
 			|elementsucc::restesucc -> if (estparcouru elementsucc liparcouru)
 						   then ajout_de_succ restesucc ns liparcouru graphe
 				   		   else (let liste_succ_de_succ = liste_succ graphe elementsucc in
-				   			ajout_de_succ restesucc ns (ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ) graphe);;			    
+				   		   	let liconnexe = [] in 
+				   			ajout_de_succ restesucc ns (ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ liconnexe)@liparcouru graphe);;			    
 
 
 				    
@@ -156,17 +151,19 @@ let inverser graphe = (**fun**)
 		
 		
 
+let rec kosaraju graphe = 
+	let graphe_inverse = inverser graphe in
+	let liconnexe = [] in 
+	match graphe_inverse with
+		[] -> liconnexe
+		|(ns,li)::reste -> let lisuperconnexe = [] in 
+			 (ns::lisuperconnexe)@(kosaraju((reste)));;
 
 
-			
-parcours_prof graphe1;;	
+
+(**parcours_prof graphe1;;	
 
 inverser graphe1;;		
 
-inverser graphe1;;		
-
-
-let rec kosaraju graphe = parcours_prof (inverser graphe1);;
-
-kosaraju graphe1;;
+kosaraju graphe1;;**)
 
