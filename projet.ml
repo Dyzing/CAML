@@ -66,26 +66,29 @@ let parcours graphe =
 	in visite [] (getNode graphe 2);;
 parcours graphe1;;
 **)
-
-let parcourir e liparcouru =
-	match liparcouru with
-		[] -> e::liparcouru
-		|ns::reste -> e::liparcouru;;
-		
 		
 let rec estparcouru e liparcouru =
 	match liparcouru with
 		[] -> false
 		|ns::reste -> if ns=e then true
-				    else estparcouru e reste;;				    
+				    else estparcouru e reste;;		
 				    
+let parcourir e liparcouru =
+	match liparcouru with
+		[] -> e::liparcouru
+		|ns::reste -> if(estparcouru e liparcouru)
+				then liparcouru
+				else e::liparcouru;;
+		
+		    
 				    
-let rec ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ liconnexe=
+(**				    
+let rec ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ =
 	match liste_succ_de_succ with
-  		[] -> parcourir elementsucc liconnexe
+  		[] -> parcourir elementsucc 
 		|elementsuccdesucc::restesuccdesucc -> if(estparcouru elementsuccdesucc liparcouru)
-						       then ajout_succ_de_succ liparcouru graphe elementsucc restesuccdesucc liconnexe
-						       else ajout_succ_de_succ (parcourir elementsuccdesucc liconnexe) graphe elementsucc (restesuccdesucc) liconnexe ;;			
+						       then ajout_succ_de_succ liparcouru graphe elementsucc restesuccdesucc 
+						       else ajout_succ_de_succ (parcourir elementsuccdesucc liparcouru) graphe elementsucc (restesuccdesucc)  ;;			
 					
 							
 let rec ajout_de_succ lisucc ns liparcouru graphe = 
@@ -94,25 +97,33 @@ let rec ajout_de_succ lisucc ns liparcouru graphe =
 			|elementsucc::restesucc -> if (estparcouru elementsucc liparcouru)
 						   then ajout_de_succ restesucc ns liparcouru graphe
 				   		   else (let liste_succ_de_succ = liste_succ graphe elementsucc in
-				   		   	let liconnexe = [] in 
-				   			ajout_de_succ restesucc ns (ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ liconnexe)@liparcouru graphe);;			    
+				   			ajout_de_succ restesucc ns ((ajout_succ_de_succ liparcouru graphe elementsucc liste_succ_de_succ)@liparcouru) graphe);;			    
+**)
 
+let rec ajout_de_succ lisucc ns liparcouru graphe li_deja_parcouru_mais_pas_bon = 
+		match lisucc with 
+			[] -> parcourir ns liparcouru
+			|elementsucc::restesucc -> if (estparcouru elementsucc liparcouru) && estparcouru elementsucc li_deja_parcouru_mais_pas_bon)
+						   then ajout_de_succ restesucc ns liparcouru graphe li_deja_parcouru_mais_pas_bon
+				   		   else let liste_succ_de_succ = liste_succ graphe elementsucc in
+				   			ajout_de_succ liste_succ_de_succ elementsucc liparcouru graphe (parcourir(elementsucc li_deja_parcouru_mais_pas_bon));;
 
 				    
-let rec rec_parcours_prof graphe liparcouru = 
+let rec rec_parcours_prof graphe liparcouru li_deja_parcouru_mais_pas_bon = 
 	match graphe with
 		[] -> liparcouru
-		|(ns,li)::reste -> if (estparcouru ns liparcouru)
-				   then rec_parcours_prof reste liparcouru
+		|(ns,li)::reste -> if ((estparcouru ns liparcouru) && (estparcouru ns li_deja_parcouru_mais_pas_bon))
+				   then rec_parcours_prof reste liparcouru li_deja_parcouru_mais_pas_bon
 				   else 
 					(let lisucc = liste_succ graphe ns in 
-						rec_parcours_prof reste (ajout_de_succ lisucc ns liparcouru graphe));;
+						rec_parcours_prof reste (ajout_de_succ lisucc ns liparcouru graphe parcourir(ns li_deja_parcouru_mais_pas_bon)) (parcourir(ns li_deja_parcouru_mais_pas_bon)));;
 						
 						
 
 let parcours_prof graphe = 
 	let liparcouru = [] in
-		rec_parcours_prof graphe liparcouru;;
+	let li_deja_parcouru_mais_pas_bon = [] in
+		rec_parcours_prof graphe liparcouru li_deja_parcouru_mais_pas_bon;;
 				    
 		
 
@@ -161,8 +172,8 @@ let rec kosaraju graphe =
 
 
 
-(**parcours_prof graphe1;;	
-
+parcours_prof graphe1;;	
+(**
 inverser graphe1;;		
 
 kosaraju graphe1;;**)
