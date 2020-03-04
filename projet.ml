@@ -66,7 +66,40 @@ let parcours graphe =
 	in visite [] (getNode graphe 2);;
 parcours graphe1;;
 **)
-		
+
+
+
+let inverser graphe = (**fun**)
+	let liste_finale = [] in 
+	let graphe_de_base = graphe in
+	
+		let rec rec_inverser graphe liste_finale  = (**fun**)
+			match graphe with
+				[] -> liste_finale
+				|(ns1,li1)::reste1 -> let liste_succ_de_ns1 = [] in
+				
+				
+						 let rec passer_au_noeud2_suivant graphe liste_succ_de_ns1 = (**fun**)
+								match graphe with
+									[] -> rec_inverser reste1 (liste_finale@((ns1,liste_succ_de_ns1)::[])) 
+									|(ns2,li2)::reste2 ->	if(ns2 = ns1)
+												then passer_au_noeud2_suivant reste2 liste_succ_de_ns1	
+												else let lisucc = liste_succ graphe ns2 in
+												
+												
+													let rec passer_a_element2_suivant lisucc liste_succ_de_ns1  = (**fun**)
+														match lisucc with
+															[] -> passer_au_noeud2_suivant reste2 liste_succ_de_ns1
+															|e2::r2 ->	if (e2 = ns1) 
+																  	then passer_au_noeud2_suivant reste2 (liste_succ_de_ns1@(ns2::[])) 
+																  	else passer_a_element2_suivant r2 liste_succ_de_ns1
+																  	
+																  	 
+												  	in passer_a_element2_suivant lisucc liste_succ_de_ns1 
+						 in passer_au_noeud2_suivant graphe_de_base liste_succ_de_ns1
+		in rec_inverser graphe liste_finale ;;
+
+	
 let rec estparcouru e liparcouru =
 	match liparcouru with
 		[] -> false
@@ -103,16 +136,17 @@ let rec ajout_de_succ lisucc ns liparcouru graphe =
 let rec ajout_de_succ lisucc ns liparcouru graphe li_deja_parcouru_mais_pas_bon = 
 		match lisucc with 
 			[] -> parcourir ns liparcouru
-			|elementsucc::restesucc -> if (estparcouru elementsucc liparcouru) && estparcouru elementsucc li_deja_parcouru_mais_pas_bon)
+			|elementsucc::restesucc -> if ((estparcouru elementsucc liparcouru) || (estparcouru elementsucc li_deja_parcouru_mais_pas_bon))
 						   then ajout_de_succ restesucc ns liparcouru graphe li_deja_parcouru_mais_pas_bon
 				   		   else let liste_succ_de_succ = liste_succ graphe elementsucc in
-				   			ajout_de_succ liste_succ_de_succ elementsucc liparcouru graphe (parcourir(elementsucc li_deja_parcouru_mais_pas_bon));;
+				   		   	let li_pile = parcourir(elementsucc li_deja_parcouru_mais_pas_bon) in 
+				   			ajout_de_succ restesucc elementsucc (ajout_de_succ liste_succ_de_succ elementsucc liparcouru graphe li_pile) graphe li_pile;;
 
 				    
 let rec rec_parcours_prof graphe liparcouru li_deja_parcouru_mais_pas_bon = 
 	match graphe with
 		[] -> liparcouru
-		|(ns,li)::reste -> if ((estparcouru ns liparcouru) && (estparcouru ns li_deja_parcouru_mais_pas_bon))
+		|(ns,li)::reste -> if ((estparcouru ns liparcouru) || (estparcouru ns li_deja_parcouru_mais_pas_bon))
 				   then rec_parcours_prof reste liparcouru li_deja_parcouru_mais_pas_bon
 				   else 
 					(let lisucc = liste_succ graphe ns in 
@@ -125,43 +159,7 @@ let parcours_prof graphe =
 	let li_deja_parcouru_mais_pas_bon = [] in
 		rec_parcours_prof graphe liparcouru li_deja_parcouru_mais_pas_bon;;
 				    
-		
-
-
-
-let inverser graphe = (**fun**)
-	let liste_finale = [] in 
-	let graphe_de_base = graphe in
-	
-		let rec rec_inverser graphe liste_finale  = (**fun**)
-			match graphe with
-				[] -> liste_finale
-				|(ns1,li1)::reste1 -> let liste_succ_de_ns1 = [] in
 				
-				
-						 let rec passer_au_noeud2_suivant graphe liste_succ_de_ns1 = (**fun**)
-								match graphe with
-									[] -> rec_inverser reste1 (liste_finale@((ns1,liste_succ_de_ns1)::[])) 
-									|(ns2,li2)::reste2 ->	if(ns2 = ns1)
-												then passer_au_noeud2_suivant reste2 liste_succ_de_ns1	
-												else let lisucc = liste_succ graphe ns2 in
-												
-												
-													let rec passer_a_element2_suivant lisucc liste_succ_de_ns1  = (**fun**)
-														match lisucc with
-															[] -> passer_au_noeud2_suivant reste2 liste_succ_de_ns1
-															|e2::r2 ->	if (e2 = ns1) 
-																  	then passer_au_noeud2_suivant reste2 (liste_succ_de_ns1@(ns2::[])) 
-																  	else passer_a_element2_suivant r2 liste_succ_de_ns1
-																  	
-																  	 
-												  	in passer_a_element2_suivant lisucc liste_succ_de_ns1 
-						 in passer_au_noeud2_suivant graphe_de_base liste_succ_de_ns1
-		in rec_inverser graphe liste_finale ;;
-		
-		
-		
-
 let rec kosaraju graphe = 
 	let graphe_inverse = inverser graphe in
 	let liconnexe = [] in 
